@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Good News Converter",
+  "version": "1.0.0",
+  "description": "Converts bad news to good and funny news for Israeli people on N12",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://sparse-hundreds-sweden.mastra.cloud/*",
+    "https://www.n12.co.il/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Convert Bad News to Good News"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.n12.co.il/*"],
+      "js": ["config.js", "content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
