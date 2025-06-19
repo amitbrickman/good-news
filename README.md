@@ -1,7 +1,5 @@
 # Good News Project
-
-![image](https://github.com/user-attachments/assets/65eef295-90bf-445a-84bc-5f990a96c0ac)
-
+<img src="https://github.com/user-attachments/assets/69e3e53b-0d00-48bd-84ef-2b31354d158f" height="400">
 
 This project consists of two main components:
 
