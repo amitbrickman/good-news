@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             buttonText.textContent = 'Loading...';
 
             // Always get the active tab here
-            console.log('[GoodNews] Getting active tab...');
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
             // Check if config is loaded (catch ReferenceError)
@@ -67,7 +66,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            console.log('[GoodNews] Starting extraction...');
             const extractionStart = Date.now();
             const newsData = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
@@ -75,7 +73,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
             const extractedNews = newsData[0].result;
             const extractionEnd = Date.now();
-            console.log(`[GoodNews] Extraction done in ${extractionEnd - extractionStart}ms`);
 
             if (!extractedNews || extractedNews.length === 0) {
                 buttonText.textContent = 'Give Me Good News';
@@ -83,11 +80,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            console.log('[GoodNews] Starting API call...');
             const apiStart = Date.now();
             const convertedNews = await convertNews(extractedNews);
             const apiEnd = Date.now();
-            console.log(`[GoodNews] API call done in ${apiEnd - apiStart}ms`);
 
             // Send converted news back to content script to replace on page
             await chrome.tabs.sendMessage(tab.id, {
@@ -116,9 +111,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 logo.insertAdjacentElement('afterend', msg);
             }
             const totalEnd = Date.now();
-            console.log(`[GoodNews] Total time: ${totalEnd - totalStart}ms`);
         } catch (error) {
-            console.error('Error:', error);
             document.body.style.background = '#181818';
             if (scanButton && document.body.contains(scanButton)) scanButton.remove();
             const disclaimer = document.querySelector('.disclaimer');

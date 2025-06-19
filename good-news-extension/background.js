@@ -3,12 +3,8 @@
 
 importScripts('config.js');
 
-console.log(`${EXTENSION_NAME} extension loaded`);
-
 // Extension installation handler
 chrome.runtime.onInstalled.addListener((details) => {
-    console.log('Extension installed:', details.reason);
-
     if (details.reason === 'install') {
         // Show welcome message
         chrome.notifications.create({
@@ -22,7 +18,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 // Handle extension startup
 chrome.runtime.onStartup.addListener(() => {
-    console.log('Good News Converter extension started');
 });
 
 // Handle messages from content script or popup
@@ -44,7 +39,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
         // Content script will be automatically injected based on manifest.json
-        console.log('Tab updated:', tab.url);
     }
 });
 
