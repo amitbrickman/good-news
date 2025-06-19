@@ -1,42 +1,93 @@
 // --- End configuration ---
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    // On popup open, check if the current tab is N12. If not, show error immediately.
     const scanButton = document.getElementById('scanButton');
-    const loading = document.getElementById('loading');
-    const results = document.getElementById('results');
+    const buttonText = document.getElementById('buttonText');
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const targetWebsite = typeof TARGET_WEBSITE !== 'undefined' ? TARGET_WEBSITE : 'n12.co.il';
+    if (!tab.url.includes(targetWebsite)) {
+        document.body.style.background = '#181818';
+        if (scanButton && document.body.contains(scanButton)) scanButton.remove();
+        const disclaimer = document.querySelector('.disclaimer');
+        if (disclaimer && document.body.contains(disclaimer)) disclaimer.remove();
+        const logo = document.querySelector('.n12-logo');
+        if (logo && document.body.contains(logo)) logo.remove();
+        const chip = document.querySelector('.credit-chip');
+        if (chip) chip.classList.add('dark');
+        showErrorMessage('This extension only works on N12.co.il');
+        return;
+    }
 
     scanButton.addEventListener('click', async function () {
+        if (scanButton.disabled) return;
         try {
-            // Disable button and show loading
+            const totalStart = Date.now();
             scanButton.disabled = true;
-            loading.style.display = 'block';
-            results.innerHTML = '';
+            buttonText.textContent = 'Loading...';
 
-            // Get the active tab
+            // Always get the active tab here
+            console.log('[GoodNews] Getting active tab...');
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
+            // Check if config is loaded (catch ReferenceError)
+            try {
+                if (typeof TARGET_TITLE_SELECTOR === 'undefined') {
+                    throw new ReferenceError('TARGET_TITLE_SELECTOR is not defined');
+                }
+            } catch (err) {
+                if (err instanceof ReferenceError) {
+                    document.body.style.background = '#181818';
+                    if (scanButton && document.body.contains(scanButton)) scanButton.remove();
+                    const disclaimer = document.querySelector('.disclaimer');
+                    if (disclaimer && document.body.contains(disclaimer)) disclaimer.remove();
+                    const logo = document.querySelector('.n12-logo');
+                    if (logo && document.body.contains(logo)) logo.remove();
+                    const chip = document.querySelector('.credit-chip');
+                    if (chip) chip.classList.add('dark');
+                    showErrorMessage('Oops! something happened', 'try refreshing the page and try again');
+                    return;
+                } else {
+                    throw err;
+                }
+            }
+
             // Check if we're on target website
-            const targetWebsite = TARGET_WEBSITE;
+            const targetWebsite = typeof TARGET_WEBSITE !== 'undefined' ? TARGET_WEBSITE : 'n12.co.il';
             if (!tab.url.includes(targetWebsite)) {
-                results.innerHTML = `<div class="error">This extension only works on ${targetWebsite}</div>`;
+                document.body.style.background = '#181818';
+                if (scanButton && document.body.contains(scanButton)) scanButton.remove();
+                const disclaimer = document.querySelector('.disclaimer');
+                if (disclaimer && document.body.contains(disclaimer)) disclaimer.remove();
+                const logo = document.querySelector('.n12-logo');
+                if (logo && document.body.contains(logo)) logo.remove();
+                const chip = document.querySelector('.credit-chip');
+                if (chip) chip.classList.add('dark');
+                showErrorMessage('This extension only works on N12.co.il');
                 return;
             }
 
-            // Execute content script to extract news
+            console.log('[GoodNews] Starting extraction...');
+            const extractionStart = Date.now();
             const newsData = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 function: extractNewsFromN12
             });
-
             const extractedNews = newsData[0].result;
+            const extractionEnd = Date.now();
+            console.log(`[GoodNews] Extraction done in ${extractionEnd - extractionStart}ms`);
 
             if (!extractedNews || extractedNews.length === 0) {
-                results.innerHTML = '<div class="no-news">No news found on this page</div>';
+                buttonText.textContent = 'Give Me Good News';
+                scanButton.disabled = false;
                 return;
             }
 
-            // Convert news using the API
+            console.log('[GoodNews] Starting API call...');
+            const apiStart = Date.now();
             const convertedNews = await convertNews(extractedNews);
+            const apiEnd = Date.now();
+            console.log(`[GoodNews] API call done in ${apiEnd - apiStart}ms`);
 
             // Send converted news back to content script to replace on page
             await chrome.tabs.sendMessage(tab.id, {
@@ -44,20 +95,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 convertedNews: convertedNews
             });
 
-            // Display results
-            displayResults(convertedNews);
-
+            // Change popup background and remove button/disclaimer
+            document.body.style.background = '#F8BFC6';
+            if (scanButton && document.body.contains(scanButton)) scanButton.remove();
+            const disclaimer = document.querySelector('.disclaimer');
+            if (disclaimer && document.body.contains(disclaimer)) disclaimer.remove();
+            // Add a message below the logo
+            const logo = document.querySelector('.n12-logo');
+            if (logo) {
+                const msg = document.createElement('div');
+                msg.textContent = 'Enjoy The News :)';
+                msg.style.textAlign = 'center';
+                msg.style.fontFamily = 'Poppins, Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                msg.style.fontWeight = '600';
+                msg.style.fontSize = '14px';
+                msg.style.position = 'relative';
+                msg.style.top = '-20px';
+                msg.style.background = '#ffffff4a';
+                msg.style.borderRadius = '2px';
+                msg.style.padding = '3px 7px';
+                msg.style.color = 'white';
+                logo.insertAdjacentElement('afterend', msg);
+            }
+            const totalEnd = Date.now();
+            console.log(`[GoodNews] Total time: ${totalEnd - totalStart}ms`);
         } catch (error) {
             console.error('Error:', error);
-            results.innerHTML = `
-        <div class="error">
-          <strong>Error:</strong> ${error.message}
-        </div>
-      `;
-        } finally {
-            // Re-enable button and hide loading
-            scanButton.disabled = false;
-            loading.style.display = 'none';
+            document.body.style.background = '#181818';
+            if (scanButton && document.body.contains(scanButton)) scanButton.remove();
+            const disclaimer = document.querySelector('.disclaimer');
+            if (disclaimer && document.body.contains(disclaimer)) disclaimer.remove();
+            const logo = document.querySelector('.n12-logo');
+            if (logo && document.body.contains(logo)) logo.remove();
+            const chip = document.querySelector('.credit-chip');
+            if (chip) chip.classList.add('dark');
+            showErrorMessage('Oops! something happened', 'try refreshing the page and try again');
         }
     });
 });
@@ -193,40 +265,83 @@ function cleanJsonResponse(text) {
     return text;
 }
 
-// Function to display results
-function displayResults(convertedNews) {
-    const results = document.getElementById('results');
-
-    if (!convertedNews || convertedNews.length === 0) {
-        results.innerHTML = '<div class="no-news">No news could be converted</div>';
-        return;
-    }
-
-    const newsHtml = convertedNews.map(news => `
-    <div class="news-item">
-      <h3>${escapeHtml(news.title)}</h3>
-      <p>${escapeHtml(news.description)}</p>
-      ${news.originalBadNews ? `
-        <div class="original-news">
-          <strong>Original:</strong> ${escapeHtml(news.originalBadNews.title)}
-        </div>
-      ` : ''}
-    </div>
-  `).join('');
-
-    results.innerHTML = `
-    <div class="success-message">
-      <strong>✅ News converted and replaced on page!</strong>
-      <p>Look for the bold text with 🌞 indicators on the ${TARGET_WEBSITE} page.</p>
-      <p>Both titles and descriptions have been updated.</p>
-    </div>
-    ${newsHtml}
-  `;
-}
-
 // Helper function to escape HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function showErrorMessage(msg, subtext) {
+    // Remove any previous error
+    let errorDiv = document.getElementById('popup-error-message');
+    if (errorDiv) errorDiv.remove();
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'popup-error-message';
+    errorDiv.style.position = 'absolute';
+    errorDiv.style.top = '50%';
+    errorDiv.style.left = '50%';
+    errorDiv.style.transform = 'translate(-50%, -50%)';
+    errorDiv.style.color = '#fff';
+    errorDiv.style.background = 'transparent';
+    errorDiv.style.fontFamily = 'Poppins, Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+    errorDiv.style.textAlign = 'center';
+    errorDiv.style.padding = '0 10px';
+    errorDiv.style.zIndex = '100';
+    errorDiv.style.width = '90%';
+    errorDiv.style.maxWidth = '210px';
+    if (msg === 'This extension only works on N12.co.il') {
+        // Create a span for the first part
+        const span1 = document.createElement('span');
+        span1.textContent = 'This extension only works on ';
+        errorDiv.appendChild(span1);
+        // Create the link
+        const link = document.createElement('a');
+        link.href = 'https://www.n12.co.il';
+        link.textContent = 'N12.co.il';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.style.color = '#fff';
+        link.style.textDecoration = 'underline';
+        link.style.cursor = 'pointer';
+        link.style.transition = 'text-decoration 0.2s';
+        link.style.whiteSpace = 'nowrap';
+        link.style.overflow = 'hidden';
+        link.style.textOverflow = 'ellipsis';
+        link.addEventListener('mouseover', () => { link.style.textDecoration = 'underline'; });
+        link.addEventListener('mouseout', () => { link.style.textDecoration = 'underline'; });
+        errorDiv.appendChild(link);
+    } else if (msg === 'Oops! something happened') {
+        // Custom error layout
+        const oops = document.createElement('div');
+        oops.textContent = 'Oops!';
+        oops.style.fontWeight = '900';
+        oops.style.fontSize = '22px';
+        oops.style.marginBottom = '2px';
+        oops.style.whiteSpace = 'nowrap';
+        oops.style.overflow = 'hidden';
+        oops.style.textOverflow = 'ellipsis';
+        errorDiv.appendChild(oops);
+        const something = document.createElement('div');
+        something.textContent = 'Something happened';
+        something.style.fontWeight = '600';
+        something.style.fontSize = '14px';
+        something.style.marginBottom = '2px';
+        something.style.whiteSpace = 'nowrap';
+        something.style.overflow = 'hidden';
+        something.style.textOverflow = 'ellipsis';
+        errorDiv.appendChild(something);
+        const tryAgain = document.createElement('div');
+        tryAgain.textContent = 'try refreshing the page and try again';
+        tryAgain.style.fontWeight = '400';
+        tryAgain.style.fontSize = '11px';
+        tryAgain.style.opacity = '0.7';
+        tryAgain.style.whiteSpace = 'nowrap';
+        tryAgain.style.overflow = 'hidden';
+        tryAgain.style.textOverflow = 'ellipsis';
+        errorDiv.appendChild(tryAgain);
+    } else {
+        errorDiv.textContent = msg;
+    }
+    document.body.appendChild(errorDiv);
 } 

@@ -4,161 +4,192 @@
 <head>
     <meta charset="utf-8">
     <title>Good News Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            width: 400px;
-            min-height: 300px;
+            width: 250px;
+            height: 210px;
             margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: linear-gradient(268deg, #db000b, #ae0000);
+            /* background: #d32f2f; */
+            /* background: #1c1c1c; */
+            /* N12 red */
             color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 30px 20px 30px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        .n12-logo {
+            width: auto;
+            height: 80px;
+            margin-bottom: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #d32f2f;
+            font-weight: bold;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+            /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
+            font-family: 'Poppins', sans-serif;
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .header p {
-            margin: 5px 0 0 0;
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .scan-button {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
+        .button-1 {
+            position: relative;
+            border: none;
+            background: transparent;
+            padding: 0;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+            outline-offset: 4px;
+            transition: filter 250ms;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: bold;
+            width: 230px;
         }
 
-        .scan-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
+        .button-1-shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: hsl(0deg 0% 0% / 0.25);
+            will-change: transform;
+            transform: translateY(2px);
+            transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
         }
 
-        .scan-button:disabled {
+        .button-1-edge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            /* background: linear-gradient(to left,
+                    hsl(340deg 100% 16%) 0%,
+                    hsl(340deg 100% 32%) 8%,
+                    hsl(340deg 100% 32%) 92%,
+                    hsl(340deg 100% 16%) 100%); */
+            background: linear-gradient(to left, hsl(340deg 80.34% 64.82%) 0%, hsl(340deg 41.11% 53.24%) 8%, hsl(340deg 53.12% 55.82%) 92%, hsl(340deg 52.75% 28.25%) 100%);
+        }
+
+        .button-1-front {
+            display: block;
+            position: relative;
+            padding: 12px 27px;
+            border-radius: 12px;
+            font-size: 16px;
+            color: white;
+            /* background: hsl(345deg 100% 47%); */
+            background: hsl(344.99deg 100% 78.4%);
+            will-change: transform;
+            transform: translateY(-4px);
+            transition:
+                transform 600ms cubic-bezier(.3, .7, .4, 1);
+        }
+
+        @media (min-width: 768px) {
+            .button-1-front {
+                font-size: 1.25rem;
+                padding: 12px 42px;
+            }
+        }
+
+        .button-1:hover {
+            filter: brightness(110%);
+            -webkit-filter: brightness(110%);
+        }
+
+        .button-1:hover .button-1-front {
+            transform: translateY(-6px);
+            transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+        }
+
+        .button-1:active .button-1-front {
+            transform: translateY(-2px);
+            transition: transform 34ms;
+        }
+
+        .button-1:hover .button-1-shadow {
+            transform: translateY(4px);
+            transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+        }
+
+        .button-1:active .button-1-shadow {
+            transform: translateY(1px);
+            transition: transform 34ms;
+        }
+
+        .button-1:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* Loader inside button */
+        .button-1-front .loader {
+            margin: 0 auto;
+        }
+
+        .disclaimer {
+            margin-top: auto;
+            font-size: 10px;
+            color: #fff;
+            opacity: 0.8;
+            text-align: center;
+            max-width: 220px;
+        }
+
+        .button-1:disabled,
+        .button-1[disabled] {
             opacity: 0.6;
             cursor: not-allowed;
+            pointer-events: none;
         }
 
-        .loading {
-            text-align: center;
-            margin: 20px 0;
+        .credit-chip {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            color: #b12b3a;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 10px;
+            border-radius: 10px;
+            letter-spacing: 0.01em;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            z-index: 10;
+            text-decoration: none;
+            user-select: text;
+            transition: color 0.2s;
         }
 
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .results {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .success-message {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .news-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #4CAF50;
-        }
-
-        .news-item h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .news-item p {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.4;
-            opacity: 0.9;
-        }
-
-        .original-news {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            padding: 8px;
-            margin-top: 8px;
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .error {
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        .no-news {
-            text-align: center;
-            opacity: 0.8;
-            font-style: italic;
+        .credit-chip.dark {
+            color: black;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>🌞 Good News Converter</h1>
-        <p>Transform N12 bad news into positive, funny news for Israeli people</p>
-    </div>
-
-    <button id="scanButton" class="scan-button">
-        🔍 Convert News on N12
+    <a class="credit-chip" href="https://www.linkedin.com/in/amit-brickman-061526225/" target="_blank"
+        rel="noopener noreferrer">@amitbrickman</a>
+    <img src="assets/icon.png" alt="N12 Logo" class="n12-logo" />
+    <button id="scanButton" class="button-1" role="button">
+        <span class="button-1-shadow"></span>
+        <span class="button-1-edge"></span>
+        <span class="button-1-front text" id="buttonText">Give Me Good News</span>
     </button>
-
-    <div id="loading" class="loading" style="display: none;">
-        <div class="spinner"></div>
-        <p>Scanning N12 page and converting news...</p>
-    </div>
-
-    <div id="results" class="results"></div>
-
+    <div class="disclaimer">Converting news may take a few seconds <b>Please keep the tab and the popup open</b></div>
     <script src="config.js"></script>
     <script src="popup.js"></script>
 </body>
