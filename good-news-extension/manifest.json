@@ -21,5 +21,11 @@
   ],
   "background": {
     "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "assets/icon-square.png",
+    "32": "assets/icon-square.png",
+    "48": "assets/icon-square.png",
+    "128": "assets/icon-square.png"
   }
 }

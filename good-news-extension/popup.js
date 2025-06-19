@@ -110,10 +110,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 msg.style.fontWeight = '600';
                 msg.style.fontSize = '14px';
                 msg.style.position = 'relative';
-                msg.style.top = '-20px';
-                msg.style.background = '#ffffff4a';
-                msg.style.borderRadius = '2px';
-                msg.style.padding = '3px 7px';
+                msg.style.top = '-27px';
+                msg.style.paddingTop = '3px';
                 msg.style.color = 'white';
                 logo.insertAdjacentElement('afterend', msg);
             }

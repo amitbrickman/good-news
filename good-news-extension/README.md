@@ -7,7 +7,6 @@ A Chrome extension that converts bad news (war, death, crime) into good and funn
 - 🌞 Converts bad news to positive, humorous news
 - 🎯 Specifically targets N12 news website
 - 🔄 Replaces both titles and descriptions on the page
-- 🎨 Visual indicators for converted news
 - ⚙️ Configurable via environment variables
 
 ## Prerequisites
@@ -103,7 +102,6 @@ The following values are hardcoded in the extension and don't need to be set as 
 3. Click "Scan for News" to find news articles on the page
 4. The extension will send the news to your Mastra API
 5. Converted good news will replace the original bad news on the page
-6. Look for bold text with 🌞 indicators to see the converted news
 
 ## Development
 

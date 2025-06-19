@@ -125,16 +125,7 @@ function replaceNewsOnPage(convertedNews) {
 
             // Replace the title text with good news
             element.textContent = matchingConvertedNews.title;
-
-            // Add visual indicator that this news was converted (keep original color)
             element.style.fontWeight = 'bold';
-
-            // Add a small indicator
-            const indicator = document.createElement('span');
-            indicator.textContent = ' 🌞';
-            indicator.style.fontSize = '0.8em';
-            indicator.style.marginLeft = '5px';
-            element.appendChild(indicator);
 
             console.log(`Replaced title: "${originalText}" with "${matchingConvertedNews.title}"`);
 
@@ -244,12 +235,6 @@ function restoreOriginalNews() {
             element.textContent = originalNewsData[index].title;
             element.style.color = '';
             element.style.fontWeight = '';
-
-            // Remove indicator
-            const indicator = element.querySelector('span');
-            if (indicator) {
-                indicator.remove();
-            }
         }
     });
 
@@ -264,52 +249,3 @@ function restoreOriginalNews() {
         }
     });
 }
-
-// Add visual indicator when extension is active
-function addExtensionIndicator() {
-    const indicator = document.createElement('div');
-    indicator.id = 'good-news-extension-indicator';
-    indicator.style.cssText = `
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    z-index: 10000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-  `;
-    indicator.textContent = `🌞 ${EXTENSION_NAME}`;
-
-    indicator.addEventListener('mouseenter', () => {
-        indicator.style.opacity = '1';
-    });
-
-    indicator.addEventListener('mouseleave', () => {
-        indicator.style.opacity = '0.8';
-    });
-
-    document.body.appendChild(indicator);
-
-    // Remove indicator after 3 seconds
-    setTimeout(() => {
-        if (indicator.parentNode) {
-            indicator.parentNode.removeChild(indicator);
-        }
-    }, 3000);
-}
-
-// Initialize the content script
-(function () {
-    // Add indicator when page loads
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', addExtensionIndicator);
-    } else {
-        addExtensionIndicator();
-    }
-})(); 
