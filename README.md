@@ -1,6 +1,7 @@
 # Good News Project
-<img src="https://github.com/user-attachments/assets/69e3e53b-0d00-48bd-84ef-2b31354d158f" height="400">
-
+<img src="https://github.com/user-attachments/assets/69e3e53b-0d00-48bd-84ef-2b31354d158f" height="400">  
+<br>
+<br>
 This project consists of two main components:
 
 1. **Mastra AI Agent**  
